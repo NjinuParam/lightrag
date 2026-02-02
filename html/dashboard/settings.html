@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Weaver.ai</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-color: #f9fafb;
+            --sidebar-width: 250px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            padding-left: 0.5rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background-color: #f3f4f6;
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-profile {
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .settings-sidebar {
+            width: 220px;
+            padding: 2rem 1rem;
+            border-right: 1px solid var(--border-color);
+            background-color: #f9fafb;
+        }
+
+        .settings-nav-header {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            padding-left: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .settings-nav-header:first-child {
+            margin-top: 0;
+        }
+
+        .settings-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .settings-link:hover {
+            background-color: #e5e7eb;
+        }
+
+        .settings-link.active {
+            background-color: #e0e7ff;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .settings-panel {
+            flex: 1;
+            padding: 2rem;
+            background-color: white;
+            overflow-y: auto;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        /* Integrations List */
+        .integration-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .integration-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .integration-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .btn-connect {
+            padding: 0.5rem 1rem;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-connect:hover {
+            background-color: #059669;
+        }
+
+        /* API Keys */
+        .help-box {
+            background-color: #f9fafb;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .create-key-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+        }
+
+        /* Billing */
+        .billing-card {
+            background-color: #f3f4f6;
+            /* darker bg for billing card */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .credit-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 1rem 0;
+        }
+
+        .topup-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .topup-option {
+            flex: 1;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .topup-option:hover {
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="logo">Weaver.ai</div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="audit.html"><span class="nav-icon">🛡️</span> Audit & Logs</a></li>
+            <li><a href="knowledge.html"><span class="nav-icon">📚</span> Knowledge Base</a></li>
+            <li><a href="workflow.html"><span class="nav-icon">⚡</span> Workflows</a></li>
+            <li><a href="#" class="active"><span class="nav-icon">⚙️</span> Settings</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="avatar">JD</div>
+            <div style="flex: 1;">
+                <div style="font-weight: 500;">John Doe</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Admin</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <aside class="settings-sidebar">
+            <div class="settings-nav-header">Account</div>
+            <a href="#general" class="settings-link">General</a>
+            <a href="#profile" class="settings-link">Template Profile</a>
+
+            <div class="settings-nav-header">Tools</div>
+            <a href="#integrations" class="settings-link active">Integrations</a>
+            <a href="#custom" class="settings-link">Custom Tools</a>
+            <a href="#mcp" class="settings-link">MCP Tools</a>
+
+            <div class="settings-nav-header">System</div>
+            <a href="#apikeys" class="settings-link">API Keys</a>
+            <a href="#billing" class="settings-link">Billing & Credits</a>
+        </aside>
+
+        <section id="integrations" class="settings-panel">
+            <h2>Integrations</h2>
+            <div style="margin-bottom: 1.5rem;">
+                <input type="text" placeholder="Search services..."
+                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+            </div>
+
+            <!-- Google Group -->
+            <div style="margin-bottom: 0.5rem; font-weight: 600; color: var(--text-secondary);">Google</div>
+
+            <div class="integration-item">
+                <div class="integration-info">
+                    <div class="integration-icon">📧</div>
+                    <div>
+                        <div style="font-weight: 500;">Gmail</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Automate email workflows</div>
+                    </div>
+                </div>
+                <button class="btn-connect">Connect</button>
+            </div>
+
+            <div class="integration-item">
+                <div class="integration-info">
+                    <div class="integration-icon">📁</div>
+                    <div>
+                        <div style="font-weight: 500;">Google Drive</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Streamline file organization
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-connect">Connect</button>
+            </div>
+
+            <!-- Microsoft Group -->
+            <div style="margin-bottom: 0.5rem; font-weight: 600; color: var(--text-secondary); margin-top: 2rem;">
+                Microsoft</div>
+
+            <div class="integration-item">
+                <div class="integration-info">
+                    <div class="integration-icon">📊</div>
+                    <div>
+                        <div style="font-weight: 500;">Microsoft Excel</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Manage spreadsheets</div>
+                    </div>
+                </div>
+                <button class="btn-connect">Connect</button>
+            </div>
+
+            <div class="integration-item">
+                <div class="integration-info">
+                    <div class="integration-icon">💬</div>
+                    <div>
+                        <div style="font-weight: 500;">Microsoft Teams</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Manage messages</div>
+                    </div>
+                </div>
+                <button class="btn-connect">Connect</button>
+            </div>
+
+            <!-- Billing Section (Hidden by default or scrolled to) -->
+            <!-- For the template I will just put it below for now to be "all in one" but normally would be separate views -->
+
+            <h2 id="billing" style="margin-top: 3rem;">Billing & Credits</h2>
+            <div class="billing-card">
+                <div>Current Balance</div>
+                <div class="credit-amount">$12.50</div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">Auto-reload is off
+                </div>
+                <button class="create-key-btn">Manage Billing Method</button>
+            </div>
+
+            <h3>Top Up Credits</h3>
+            <div class="topup-options">
+                <div class="topup-option">
+                    <div style="font-weight: bold; font-size: 1.25rem;">$20</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">2,000 executions</div>
+                </div>
+                <div class="topup-option" style="border-color: var(--primary-color); background-color: #e0e7ff;">
+                    <div style="font-weight: bold; font-size: 1.25rem;">$50</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">5,500 executions</div>
+                    <div style="font-size: 0.7rem; color: var(--primary-color); font-weight: bold;">BEST VALUE</div>
+                </div>
+                <div class="topup-option">
+                    <div style="font-weight: bold; font-size: 1.25rem;">$100</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">12,000 executions</div>
+                </div>
+            </div>
+
+            <h2 id="apikeys" style="margin-top: 3rem;">API Keys</h2>
+            <div class="help-box">
+                These keys allow external systems to access your Weaver workflows. Keep them secret.
+            </div>
+            <div style="text-align: right; margin-bottom: 1rem;">
+                <button class="create-key-btn">+ Create</button>
+            </div>
+            <table>
+                <thead>
+                    <tr style="background-color: #f9fafb;">
+                        <th style="text-align: left; padding: 0.5rem;">Name</th>
+                        <th style="text-align: left; padding: 0.5rem;">Key Prefix</th>
+                        <th style="text-align: left; padding: 0.5rem;">Created</th>
+                        <th style="text-align: right; padding: 0.5rem;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 0.75rem 0.5rem;">Production App</td>
+                        <td style="padding: 0.75rem 0.5rem; font-family: monospace;">sk_live_...48f2</td>
+                        <td style="padding: 0.75rem 0.5rem;">Jan 10, 2026</td>
+                        <td style="padding: 0.75rem 0.5rem; text-align: right; color: red; cursor: pointer;">Revoke</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+    </div>
+</body>
+
+</html>

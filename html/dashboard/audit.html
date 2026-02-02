@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit & Governance - Weaver.ai</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-color: #f9fafb;
+            --sidebar-width: 250px;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            padding-left: 0.5rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-links a.active,
+        .nav-links a:hover {
+            background: #f3f4f6;
+            color: var(--primary-color);
+        }
+
+        .user-profile {
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        p.lead {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Top Level Tabs */
+        .top-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .top-tab {
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .top-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .top-tab:hover {
+            color: var(--text-color);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Alerts Section */
+        .alerts {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .alert-warn {
+            background: #fffbeb;
+            border-color: #fde68a;
+            color: #92400e;
+        }
+
+        /* Audit List Table Style */
+        .audit-list {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .audit-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 1rem;
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        details.audit-row {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        details.audit-row:last-child {
+            border-bottom: none;
+        }
+
+        summary.audit-summary {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 1rem;
+            cursor: pointer;
+            align-items: center;
+            transition: background 0.1s;
+        }
+
+        summary.audit-summary:hover {
+            background: #f9fafb;
+        }
+
+        .user-info {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-weight: 600;
+            background: #e5e7eb;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        .details-panel {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .conversation-item {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .conversation-item summary {
+            padding: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .conversation-item[open] summary {
+            border-bottom: 1px solid var(--border-color);
+            background: #f9fafb;
+        }
+
+        .chat-bubbles {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            max-width: 80%;
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+
+        .bubble-user {
+            background: #e0e7ff;
+            color: #3730a3;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+
+        .bubble-bot {
+            background: #f3f4f6;
+            color: #1f2937;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Inference Detail Styles */
+        .inference-container {
+            display: flex;
+            gap: 1.5rem;
+            height: calc(100vh - 200px);
+        }
+
+        .inf-sidebar {
+            width: 300px;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .inf-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .inf-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            background: #f9fafb;
+        }
+
+        .inf-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .inf-tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+            background: #fff;
+        }
+
+        .inf-content {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+            display: none;
+        }
+
+        .inf-content.active {
+            display: block;
+        }
+
+        .trace-item {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .trace-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .trace-item.selected {
+            border-color: var(--primary-color);
+            background: #e0e7ff;
+        }
+
+        .trace-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .trace-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Graph Visualization Mockup */
+        .graph-viz {
+            width: 100%;
+            height: 300px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .node {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            font-size: 1.25rem;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .edge {
+            position: absolute;
+            height: 2px;
+            background: #cbd5e1;
+            transform-origin: 0 50%;
+            z-index: 1;
+        }
+
+        /* Code Block */
+        pre {
+            background: #111827;
+            color: #a5f3fc;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+        }
+
+        .key {
+            color: #93c5fd;
+        }
+
+        .string {
+            color: #a5f3fc;
+        }
+
+        .number {
+            color: #fca5a5;
+        }
+
+        .model-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Weaver.ai</div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><span style="margin-right:0.5rem">📊</span>Dashboard</a></li>
+            <li><a href="audit.html" class="active"><span style="margin-right:0.5rem">🛡️</span>Audit & Logs</a></li>
+            <li><a href="knowledge.html"><span style="margin-right:0.5rem">📚</span>Knowledge Base</a></li>
+            <li><a href="workflow.html"><span style="margin-right:0.5rem">⚡</span>Workflows</a></li>
+            <li><a href="settings.html"><span style="margin-right:0.5rem">⚙️</span>Settings</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="avatar">JD</div>
+            <div>
+                <div style="font-weight:600">John Doe</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary)">Admin</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Audit & Governance</h1>
+            <p class="lead">Monitor AI execution, compliance, and user activity.</p>
+        </header>
+
+        <div class="top-tabs">
+            <button class="top-tab active" onclick="switchMainTab('overview', this)">Overview & Activity</button>
+            <button class="top-tab" onclick="switchMainTab('inference', this)">Deep Inference Inspection</button>
+        </div>
+
+        <!-- TAB 1: OVERVIEW -->
+        <div id="overview" class="tab-panel active">
+            <div class="alerts">
+                <div class="alert alert-info">
+                    <div style="font-size:1.25rem">💡</div>
+                    <div>
+                        <div style="font-weight:700">Optimization Opportunity</div>
+                        <div style="color:var(--text-secondary);">Switching "General QA" to
+                            <strong>Mistral-Small</strong> could save ~10% on costs.
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-warn">
+                    <div style="font-size:1.25rem">⚠️</div>
+                    <div>
+                        <div style="font-weight:700">Unusual Activity</div>
+                        <div style="color:var(--text-secondary);">User "Guest_API" had 15 failed submissions; rate
+                            limiting applied.</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- NEW: Governance Compliance & Policy Metrics -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                <!-- Compliance Score Card -->
+                <div
+                    style="background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; display: flex; align-items: center; gap: 2rem;">
+                    <div
+                        style="position: relative; width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--success-color) 0% 92%, #e5e7eb 92% 100%); display: flex; align-items: center; justify-content: center;">
+                        <div
+                            style="position: absolute; width: 80px; height: 80px; background: #fff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <span style="font-size: 1.5rem; font-weight: 700; color: var(--text-color);">92%</span>
+                            <span style="font-size: 0.7rem; color: var(--text-secondary);">Score</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem; font-size: 1rem;">Governance Health</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Your AI
+                            fleet is compliant with ISO-42001 standards. 2 minor policy gaps detected.</p>
+                        <a href="#"
+                            style="color: var(--primary-color); font-size: 0.85rem; text-decoration: none; font-weight: 500;">View
+                            Compliance Report &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Top Policy Violations -->
+                <div
+                    style="background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem;">
+                    <h4
+                        style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 1rem;">
+                        Top Policy Interventions (30d)</h4>
+
+                    <div style="margin-bottom: 0.75rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.25rem;">
+                            <span>PII Leakage Prevention</span>
+                            <span style="font-weight: 600; color: var(--danger-color);">24</span>
+                        </div>
+                        <div style="width: 100%; height: 6px; background: #fee2e2; border-radius: 99px;">
+                            <div
+                                style="width: 65%; height: 100%; background: var(--danger-color); border-radius: 99px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 0.75rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.25rem;">
+                            <span>Toxic Language Filter</span>
+                            <span style="font-weight: 600; color: var(--warning-color);">12</span>
+                        </div>
+                        <div style="width: 100%; height: 6px; background: #fef3c7; border-radius: 99px;">
+                            <div
+                                style="width: 35%; height: 100%; background: var(--warning-color); border-radius: 99px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.25rem;">
+                            <span>Competitor Mention</span>
+                            <span style="font-weight: 600; color: var(--text-secondary);">5</span>
+                        </div>
+                        <div style="width: 100%; height: 6px; background: #e5e7eb; border-radius: 99px;">
+                            <div
+                                style="width: 15%; height: 100%; background: var(--text-secondary); border-radius: 99px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div style="margin-bottom: 1rem;"><input type="text" placeholder="Search logs..."
+                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            </div>
+
+            <div class="audit-list">
+                <div class="audit-header">
+                    <div>User / Entity</div>
+                    <div>Activity</div>
+                    <div>Risk Level</div>
+                    <div>Last Active</div>
+                </div>
+
+                <!-- Row 1 -->
+                <details class="audit-row" open>
+                    <summary class="audit-summary">
+                        <div class="user-info">
+                            <div
+                                style="width:28px; height:28px; border-radius:50%; background:#4f46e5; color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.75rem;">
+                                JK</div>John Kitenge
+                        </div>
+                        <div><span class="badge">5 Forms</span> <span class="badge">18 Queries</span></div>
+                        <div style="color:var(--success-color); font-weight:600">Low</div>
+                        <div>2 mins ago</div>
+                    </summary>
+                    <div class="details-panel">
+                        <h4 style="margin-bottom:0.75rem;">Recent Interaction History</h4>
+
+                        <!-- Item 1 -->
+                        <details class="conversation-item">
+                            <summary><span>Query #1011: Payment Data</span> <span
+                                    style="font-weight:400; color:var(--text-secondary)">Today, 2:15 PM</span></summary>
+                            <div class="chat-bubbles">
+                                <div class="bubble bubble-user">Post a payment holiday for account #8829</div>
+                                <div class="bubble bubble-bot">Confirmed. Posting payment holiday for Account #8829
+                                    starting Feb 2, 2026.</div>
+                                <div
+                                    style="font-family:monospace; background:#1f2937; color:#10b981; padding:0.5rem; border-radius:4px; font-size:0.75rem;">
+                                    > POST /api/payments/holiday { "id": 8829 } → 200 OK</div>
+                            </div>
+                        </details>
+
+                        <!-- Item 2 -->
+                        <details class="conversation-item">
+                            <summary><span>Query #1009: Document Summarization</span> <span
+                                    style="font-weight:400; color:var(--text-secondary)">Today, 1:45 PM</span></summary>
+                            <div class="chat-bubbles">
+                                <div class="bubble bubble-user">Summarize the attached PDF regarding "Clean Desk
+                                    Policy".</div>
+                                <div class="bubble bubble-bot">Processing PDF... Here is a summary of the Clean Desk
+                                    Policy: All sensitive documents must be locked away when not in use. Computers must
+                                    be locked when unattended.</div>
+                                <div
+                                    style="font-family:monospace; background:#1f2937; color:#10b981; padding:0.5rem; border-radius:4px; font-size:0.75rem;">
+                                    > RAG_RETRIEVE { doc_id: "pol_clean_desk" } → Success</div>
+                            </div>
+                        </details>
+
+                        <!-- Item 3 -->
+                        <details class="conversation-item">
+                            <summary style="color:var(--danger-color);"><span>Query #1005: Restricted Access
+                                    Attempt</span> <span style="font-weight:400; color:var(--text-secondary)">Today,
+                                    11:10 AM</span></summary>
+                            <div class="chat-bubbles">
+                                <div class="bubble bubble-user">Show me salary details for user ID 4421 (CEO)</div>
+                                <div class="bubble bubble-bot" style="border-left: 4px solid var(--danger-color);">I
+                                    cannot fulfill this request. Accessing executive salary data requires Level 5
+                                    clearance. This attempt has been logged.</div>
+                                <div
+                                    style="font-family:monospace; background:#1f2937; color:#f87171; padding:0.5rem; border-radius:4px; font-size:0.75rem;">
+                                    > POLICY_CHECK_FAIL { reason: "insufficient_privilege", user: "jkitenge" }</div>
+                            </div>
+                        </details>
+
+                        <!-- Item 4 -->
+                        <details class="conversation-item">
+                            <summary><span>Query #998: General Chat</span> <span
+                                    style="font-weight:400; color:var(--text-secondary)">Yesterday, 4:50 PM</span>
+                            </summary>
+                            <div class="chat-bubbles">
+                                <div class="bubble bubble-user">Draft a polite email to client X rescheduling our
+                                    meeting.</div>
+                                <div class="bubble bubble-bot">Here is a draft: "Dear Client X, I hope this email finds
+                                    you well. Due to an unforeseen conflict..."</div>
+                            </div>
+                        </details>
+                    </div>
+                </details>
+
+                <!-- Row 2 -->
+                <details class="audit-row">
+                    <summary class="audit-summary">
+                        <div class="user-info">
+                            <div
+                                style="width:28px; height:28px; border-radius:50%; background:#db2777; color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.75rem;">
+                                AS</div>Alice Smith
+                        </div>
+                        <div><span class="badge">12 Forms</span> <span class="badge">42 Queries</span></div>
+                        <div style="color:var(--success-color); font-weight:600">Low</div>
+                        <div>1 hour ago</div>
+                    </summary>
+                    <div class="details-panel">History unavailable offline.</div>
+                </details>
+
+                <!-- Row 3 -->
+                <details class="audit-row">
+                    <summary class="audit-summary">
+                        <div class="user-info">
+                            <div
+                                style="width:28px; height:28px; border-radius:50%; background:#d97706; color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.75rem;">
+                                G</div>Guest_API
+                        </div>
+                        <div><span class="badge" style="background:#fee2e2; color:#b91c1c">15 Failed</span></div>
+                        <div style="color:var(--warning-color); font-weight:600">Medium</div>
+                        <div>4 hours ago</div>
+                    </summary>
+                    <div class="details-panel" style="color: #b91c1c;">Multiple 401 warnings detected.</div>
+                </details>
+            </div>
+        </div>
+
+        <!-- TAB 2: INFERENCE DETAILS -->
+        <div id="inference" class="tab-panel">
+            <div class="inference-container">
+                <!-- Sidebar Selection -->
+                <div class="inf-sidebar">
+                    <h4 style="margin-bottom:1rem; padding-left:0.25rem;">Recent Traces</h4>
+                    <div class="trace-item selected">
+                        <div class="trace-meta"><span>#REQ-9942</span> <span>200 OK</span></div>
+                        <div class="trace-title">Payment Holiday Request</div>
+                        <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.25rem;">GPT-4o • 1.2s •
+                            $0.04</div>
+                    </div>
+                    <div class="trace-item">
+                        <div class="trace-meta"><span>#REQ-9941</span> <span>400 Bad Req</span></div>
+                        <div class="trace-title">Malformed JSON Input</div>
+                        <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.25rem;">Claude-3 • 0.4s
+                            • $0.01</div>
+                    </div>
+                    <div class="trace-item">
+                        <div class="trace-meta"><span>#REQ-9940</span> <span>200 OK</span></div>
+                        <div class="trace-title">General Policy Q&A</div>
+                        <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.25rem;">Llama-3-70b •
+                            3.5s • $0.002</div>
+                    </div>
+                </div>
+
+                <!-- Detail View -->
+                <div class="inf-main">
+                    <div class="inf-tabs">
+                        <div class="inf-tab active" onclick="switchInfTab('graph', this)">Execution Graph</div>
+                        <div class="inf-tab" onclick="switchInfTab('rag', this)">Context & RAG</div>
+                        <div class="inf-tab" onclick="switchInfTab('model', this)">Model Details</div>
+                        <div class="inf-tab" onclick="switchInfTab('raw', this)">Raw Logs</div>
+                    </div>
+
+                    <div id="graph" class="inf-content active">
+                        <h3 style="margin-bottom:1rem;">Workflow Execution Path</h3>
+                        <div class="graph-viz">
+                            <!-- CSS Nodes -->
+                            <div class="node" style="left:50px; top:130px;" title="Input">📥</div>
+                            <div class="edge" style="left:90px; top:150px; width:60px; transform:rotate(0deg);"></div>
+
+                            <div class="node" style="left:150px; top:130px;" title="Intent Classifier">🧠</div>
+                            <div class="edge" style="left:190px; top:150px; width:60px; transform:rotate(-20deg);">
+                            </div>
+                            <div class="edge" style="left:190px; top:150px; width:60px; transform:rotate(20deg);"></div>
+
+                            <div class="node" style="left:250px; top:80px;" title="Policy Check">🛡️</div>
+                            <div class="node" style="left:250px; top:180px;" title="API Tool">🔧</div>
+
+                            <div class="edge" style="left:290px; top:100px; width:60px; transform:rotate(20deg);"></div>
+                            <div class="edge" style="left:290px; top:200px; width:60px; transform:rotate(-20deg);">
+                            </div>
+
+                            <div class="node" style="left:350px; top:130px; background:#dcfce7; border-color:#16a34a;"
+                                title="Success">✅</div>
+                        </div>
+                        <div
+                            style="margin-top:1rem; padding:1rem; background:#f0f9ff; border-radius:6px; color:#0369a1; font-size:0.9rem;">
+                            <strong>Analysis:</strong> The intent was classified as "Transactional". Policy check
+                            passed. API Tool invoked successfully.
+                        </div>
+                    </div>
+
+                    <div id="rag" class="inf-content">
+                        <h3 style="margin-bottom:1rem;">Retrieved Context</h3>
+                        <div
+                            style="margin-bottom:1rem; padding:1rem; border:1px solid var(--border-color); border-radius:6px; border-left:4px solid var(--primary-color);">
+                            <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.5rem;">Document:
+                                Payment_Policies_v2.pdf (Page 4)</div>
+                            <div style="font-style:italic; color:#4b5563;">"...customers are eligible for a payment
+                                holiday if their account is in good standing and they have not requested one in the last
+                                12 months..."</div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem;">
+                                <span class="badge">Score: 0.92</span>
+                                <span class="badge">Chunk ID: 4421</span>
+                            </div>
+                        </div>
+                        <div
+                            style="margin-bottom:1rem; padding:1rem; border:1px solid var(--border-color); border-radius:6px; border-left:4px solid var(--primary-color);">
+                            <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.5rem;">Document:
+                                Customer_SLA.docx</div>
+                            <div style="font-style:italic; color:#4b5563;">"...requests processed before 3 PM are
+                                actioned same-day..."</div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem;">
+                                <span class="badge">Score: 0.78</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="model" class="inf-content">
+                        <h3 style="margin-bottom:1rem;">Model Metadata</h3>
+                        <div class="model-card">
+                            <div class="stat-box">
+                                <div class="stat-label">Model Name</div>
+                                <div class="stat-value">GPT-4o-2024-05-13</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Temperature</div>
+                                <div class="stat-value">0.3</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Total Tokens</div>
+                                <div class="stat-value">1,420</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Latency</div>
+                                <div class="stat-value">1,240ms</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom:0.5rem;">Safety Filters</h4>
+                            <div style="display:flex; gap:0.5rem;">
+                                <span
+                                    style="padding:0.25rem 0.75rem; background:#dcfce7; color:#166534; border-radius:99px; font-size:0.8rem; font-weight:600;">Hate:
+                                    Pass</span>
+                                <span
+                                    style="padding:0.25rem 0.75rem; background:#dcfce7; color:#166534; border-radius:99px; font-size:0.8rem; font-weight:600;">Violence:
+                                    Pass</span>
+                                <span
+                                    style="padding:0.25rem 0.75rem; background:#dcfce7; color:#166534; border-radius:99px; font-size:0.8rem; font-weight:600;">Self-Harm:
+                                    Pass</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="raw" class="inf-content">
+                        <h3 style="margin-bottom:1rem;">Raw JSON Payload</h3>
+                        <pre>
+{
+  <span class="key">"trace_id"</span>: <span class="string">"req_9942a_x1"</span>,
+  <span class="key">"timestamp"</span>: <span class="string">"2026-01-27T14:15:22Z"</span>,
+  <span class="key">"inputs"</span>: {
+    <span class="key">"user_query"</span>: <span class="string">"Post a payment holiday for account #8829"</span>,
+    <span class="key">"session_id"</span>: <span class="string">"sess_8812"</span>
+  },
+  <span class="key">"chain_steps"</span>: [
+    {
+      <span class="key">"step"</span>: <span class="string">"intent_classifier"</span>,
+      <span class="key">"output"</span>: <span class="string">"payment_holiday"</span>
+    },
+    {
+      <span class="key">"step"</span>: <span class="string">"tool_call"</span>,
+      <span class="key">"function"</span>: <span class="string">"post_holiday"</span>,
+      <span class="key">"args"</span>: { <span class="key">"acc"</span>: 8829 }
+    }
+  ]
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching logic
+        function switchMainTab(tabId, btn) {
+            // Toggle tab buttons
+            document.querySelectorAll('.top-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Toggle panel visibility
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function switchInfTab(tabId, btn) {
+            // Toggle inner tab buttons
+            document.querySelectorAll('.inf-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Toggle inner content
+            document.querySelectorAll('.inf-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
+
+</body>
+
+</html>

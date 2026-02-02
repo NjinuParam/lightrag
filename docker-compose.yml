@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  lightrag:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storage:/data/vectorstore
+    env_file:
+      - .env
+    environment:
+      - VECTOR_DB_PATH=/data/vectorstore
+    restart: always
+
+  scraper:
+    build: ./scraper
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      - LIGHTRAG_API_URL=http://lightrag:8000
+    depends_on:
+      - lightrag
+    restart: always

@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+venv/
+storage/
+*.pdf
+.git/
+.gitignore
+plan.md
+spec.md
+deployment.md

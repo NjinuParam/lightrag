@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base - Weaver.ai</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-color: #f9fafb;
+            --sidebar-width: 250px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            padding-left: 0.5rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background-color: #f3f4f6;
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-profile {
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        /* Upload Area */
+        .upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.75rem;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #fcfdfe;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--primary-color);
+            background-color: #f5f6ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* File List */
+        .file-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .file-list th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .file-list td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background-color: #def7ec;
+            color: #03543f;
+        }
+
+        .status-pending {
+            background-color: #e1effe;
+            color: #1e429f;
+        }
+
+        .status-error {
+            background-color: #fde8e8;
+            color: #9b1c1c;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 999px;
+            height: 8px;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 999px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding-bottom: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Log Viewer */
+        .log-viewer {
+            background-color: #111827;
+            color: #d1d5db;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 1.5rem;
+            display: none;
+            line-height: 1.5;
+            border: 1px solid #374151;
+        }
+
+        .log-viewer h1,
+        .log-viewer h2,
+        .log-viewer h3 {
+            color: #f3f4f6;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .log-viewer h1 {
+            font-size: 1.25rem;
+            border-bottom: 1px solid #374151;
+            padding-bottom: 0.5rem;
+        }
+
+        .log-viewer h2 {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .log-viewer h3 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+        }
+
+        .log-viewer hr {
+            border: 0;
+            border-top: 1px solid #374151;
+            margin: 1.5rem 0;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background-color: #1f2937;
+            color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="logo">Weaver.ai</div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="audit.html"><span class="nav-icon">🛡️</span> Audit & Logs</a></li>
+            <li><a href="knowledge.html" class="active"><span class="nav-icon">📚</span> Knowledge Base</a></li>
+            <li><a href="workflow.html"><span class="nav-icon">⚡</span> Workflows</a></li>
+            <li><a href="extensions.html"><span class="nav-icon">🧩</span> Extensions</a></li>
+            <li><a href="settings.html"><span class="nav-icon">⚙️</span> Settings</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="avatar">JD</div>
+            <div style="flex: 1;">
+                <div style="font-weight: 500;">John Doe</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Admin</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Knowledge Base</h1>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('files')">Files & Docs</div>
+            <div class="tab" onclick="switchTab('crawl')">Web Crawl</div>
+        </div>
+
+        <div id="files" class="tab-content active">
+            <div class="card">
+                <div class="upload-zone" id="drop-zone">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Drag and drop documents here</div>
+                    <div class="upload-subtext">Supports PDF, TXT, DOCX (Max 25MB)</div>
+                    <input type="file" id="file-input" style="display: none;" multiple>
+                    <div class="progress-container" id="progress-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 1rem;">Managed Content</h3>
+                <table class="file-list">
+                    <thead>
+                        <tr>
+                            <th>Document Name</th>
+                            <th>ID</th>
+                            <th>Status</th>
+                            <th>Date Ingested</th>
+                        </tr>
+                    </thead>
+                    <tbody id="file-table-body">
+                        <tr>
+                            <td>general_policy.pdf</td>
+                            <td>pdf_8821</td>
+                            <td><span class="status-badge status-success">Completed</span></td>
+                            <td>Jan 28, 2026</td>
+                        </tr>
+                        </thead>
+                </table>
+            </div>
+        </div>
+
+        <div id="crawl" class="tab-content">
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem;">Crawl New Website</h3>
+                <div id="url-container">
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <input type="text" placeholder="https://example.com" class="url-input"
+                            style="flex: 1; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                        <button onclick="removeUrl(this)"
+                            style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">✕</button>
+                    </div>
+                </div>
+                <button onclick="addUrlField()"
+                    style="background: none; border: 1px dashed var(--border-color); width: 100%; padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; color: var(--text-secondary); margin-bottom: 1.5rem;">+
+                    Add another URL</button>
+                <div style="display: flex; gap: 1rem;">
+                    <button onclick="startCrawl()"
+                        style="flex: 2; padding: 0.75rem; background-color: var(--primary-color); color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">Initiate
+                        Crawl</button>
+                    <button onclick="fetchCrawlerLogs()"
+                        style="flex: 1; padding: 0.75rem; background-color: white; color: var(--text-color); border: 1px solid var(--border-color); border-radius: 0.5rem; font-weight: 600; cursor: pointer;">View
+                        Last Logs</button>
+                </div>
+
+                <div id="log-display" class="log-viewer">
+                    <div id="log-content">Loading logs...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Successfully initiated!</div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const progressBar = document.getElementById('progress-bar');
+        const progressContainer = document.getElementById('progress-container');
+
+        // Tab Switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // File Selection
+        dropZone.onclick = () => fileInput.click();
+
+        fileInput.onchange = (e) => {
+            handleFiles(e.target.files);
+        };
+
+        dropZone.ondragover = (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        };
+
+        dropZone.ondragleave = () => {
+            dropZone.classList.remove('dragover');
+        };
+
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        };
+
+        async function handleFiles(files) {
+            for (let file of files) {
+                await uploadFile(file);
+            }
+        }
+
+        async function uploadFile(file) {
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '10%';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('document_id', file.name.split('.')[0]);
+
+            try {
+                // Mock progress for UI feel
+                let progress = 10;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    if (progress >= 90) clearInterval(interval);
+                    progressBar.style.width = progress + '%';
+                }, 100);
+
+                const response = await fetch('https://light-rag-sandbox.lemongrass-84d35018.westus2.azurecontainerapps.io/ingest', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer your_api_token_here'
+                    },
+                    body: formData
+                });
+
+                clearInterval(interval);
+                progressBar.style.width = '100%';
+
+                if (response.ok) {
+                    showToast('Successfully ingested: ' + file.name);
+                    addFileToTable(file.name);
+                } else {
+                    showToast('Error uploading: ' + file.name);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Network error uploading file');
+            } finally {
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    progressBar.style.width = '0%';
+                }, 2000);
+            }
+        }
+
+        function addFileToTable(name) {
+            const tbody = document.getElementById('file-table-body');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${name}</td>
+                <td>${name.split('.')[0]}</td>
+                <td><span class="status-badge status-pending">Processing</span></td>
+                <td>Today</td>
+            `;
+            tbody.prepend(row);
+        }
+
+        // Crawl Logic
+        function addUrlField() {
+            const container = document.getElementById('url-container');
+            const div = document.createElement('div');
+            div.style = "display: flex; gap: 0.5rem; margin-bottom: 1rem;";
+            div.innerHTML = `
+                <input type="text" placeholder="https://example.com" class="url-input" style="flex: 1; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                <button onclick="removeUrl(this)" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeUrl(btn) {
+            btn.parentElement.remove();
+        }
+
+        async function startCrawl() {
+            const inputs = document.querySelectorAll('.url-input');
+            const urls = Array.from(inputs).map(i => i.value).filter(v => v.trim() !== '');
+
+            if (urls.length === 0) {
+                showToast('Please enter at least one URL');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://www.sim.ai/api/workflows/f78f4c72-fff7-4e3c-ab38-52ad5086e7ae/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': 'sk-sim-BfqyskaVxkVJGR5lFtWx9PtQr8PAV173'
+                    },
+                    body: JSON.stringify({
+                        operation: 'crawl',
+                        input: urls
+                    })
+                });
+
+                if (response.ok) {
+                    showToast('Crawl initiated for ' + urls.length + ' site(s)');
+                    // Auto-fetch logs after a delay
+                    setTimeout(fetchCrawlerLogs, 5000);
+                } else {
+                    showToast('Error initiating crawl');
+                }
+            } catch (err) {
+                showToast('Network error');
+            }
+        }
+
+        async function fetchCrawlerLogs() {
+            const logDisplay = document.getElementById('log-display');
+            const logContent = document.getElementById('log-content');
+
+            logDisplay.style.display = 'block';
+            logContent.innerHTML = 'Fetching crawler logs from sandbox...';
+
+            try {
+                const response = await fetch('https://crawler-sandbox.lemongrass-84d35018.westus2.azurecontainerapps.io/logs', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer your_secret_token_here'
+                    }
+                });
+
+                if (response.ok) {
+                    const text = await response.text();
+                    renderLogs(text);
+                } else {
+                    logContent.innerHTML = '<span style="color: #ef4444;">Error: Could not retrieve logs. Status: ' + response.status + '</span>';
+                }
+            } catch (err) {
+                logContent.innerHTML = '<span style="color: #ef4444;">Network Error: Failed to reach log endpoint.</span>';
+            }
+        }
+
+        function renderLogs(text) {
+            const logContent = document.getElementById('log-content');
+
+            // Simple Markdown-to-HTML parser for the specific response format
+            let html = text
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^\-\-\-/gm, '<hr>')
+                .replace(/\n\n/g, '<br><br>');
+
+            logContent.innerHTML = html;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+    </script>
+</body>
+
+</html>

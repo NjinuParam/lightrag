@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-multipart
+python-dotenv
+pydantic
+pypdf
+faiss-cpu
+sentence-transformers
+openai
+ollama
+loguru
+click
+requests

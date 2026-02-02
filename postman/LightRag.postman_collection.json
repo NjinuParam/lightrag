@@ -1,0 +1,364 @@
+{
+  "info": {
+    "_postman_id": "9a28df89-d3ea-427f-ac2d-8fec7fd9455e",
+    "name": "LightRag",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "565216"
+  },
+  "item": [
+    {
+      "name": "http://127.0.0.1:8000/ingest",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_api_token_here",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "8775e498-7365-49bf-8cd5-65337e32846c",
+              "src": "/C:/Users/g987077/Downloads/General.pdf"
+            },
+            {
+              "key": "document_id",
+              "value": "pdf",
+              "type": "text",
+              "uuid": "de87a4a1-fb84-42f7-baa6-1f2f4cef3bef"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/ingest",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "ingest"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://127.0.0.1:8000/query",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_api_token_here",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"what is thooto?\",\r\n  \"k\": 5,\r\n  \"collection\": \"project_alpha\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/query",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "query"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://127.0.0.1:8001/crawl",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_api_token_here",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"document_id\": \"client_site\",\r\n  \"urls\": [\"https://thooto.com/about-us\"],\r\n  \"collection\": \"project_alpha\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/crawl",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "crawl"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "sim-query",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "sk-sim-BfqyskaVxkVJGR5lFtWx9PtQr8PAV173",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"input\": \"what is thooto?\",\r\n  \"operation\": \"query\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://www.sim.ai/api/workflows/f78f4c72-fff7-4e3c-ab38-52ad5086e7ae/execute",
+          "protocol": "https",
+          "host": [
+            "www",
+            "sim",
+            "ai"
+          ],
+          "path": [
+            "api",
+            "workflows",
+            "f78f4c72-fff7-4e3c-ab38-52ad5086e7ae",
+            "execute"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "sim-crawl",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "sk-sim-BfqyskaVxkVJGR5lFtWx9PtQr8PAV173",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"operation\": \"crawl\",\r\n  \"input\": [\"https://thooto.com\"]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://www.sim.ai/api/workflows/f78f4c72-fff7-4e3c-ab38-52ad5086e7ae/execute",
+          "protocol": "https",
+          "host": [
+            "www",
+            "sim",
+            "ai"
+          ],
+          "path": [
+            "api",
+            "workflows",
+            "f78f4c72-fff7-4e3c-ab38-52ad5086e7ae",
+            "execute"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/ingest",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_api_token_here",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "8775e498-7365-49bf-8cd5-65337e32846c",
+              "src": "/C:/Users/g987077/Downloads/General.pdf"
+            },
+            {
+              "key": "document_id",
+              "value": "pdf",
+              "type": "text",
+              "uuid": "de87a4a1-fb84-42f7-baa6-1f2f4cef3bef"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://light-rag-sandbox.lemongrass-84d35018.westus2.azurecontainerapps.io/ingest",
+          "protocol": "https",
+          "host": [
+            "light-rag-sandbox",
+            "lemongrass-84d35018",
+            "westus2",
+            "azurecontainerapps",
+            "io"
+          ],
+          "path": [
+            "ingest"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/query",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_api_token_here",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"what is thooto?\",\r\n  \"k\": 5,\r\n  \"collection\": \"project_alpha\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/query",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "query"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/crawl",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_api_token_here",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"document_id\": \"client_site\",\r\n  \"urls\": [\"https://thooto.com/about-us\"],\r\n  \"collection\": \"project_alpha\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://crawler-sandbox.lemongrass-84d35018.westus2.azurecontainerapps.io/crawl",
+          "protocol": "https",
+          "host": [
+            "crawler-sandbox",
+            "lemongrass-84d35018",
+            "westus2",
+            "azurecontainerapps",
+            "io"
+          ],
+          "path": [
+            "crawl"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/logs",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_secret_token_here",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"document_id\": \"client_site\",\r\n  \"urls\": [\"https://thooto.com/about-us\"],\r\n  \"collection\": \"project_alpha\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://crawler-sandbox.lemongrass-84d35018.westus2.azurecontainerapps.io/logs",
+          "protocol": "https",
+          "host": [
+            "crawler-sandbox",
+            "lemongrass-84d35018",
+            "westus2",
+            "azurecontainerapps",
+            "io"
+          ],
+          "path": [
+            "logs"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

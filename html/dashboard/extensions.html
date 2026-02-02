@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extensions - Weaver.ai</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-color: #f9fafb;
+            --sidebar-width: 250px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            padding-left: 0.5rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background-color: #f3f4f6;
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-profile {
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Extension Cards */
+        .extensions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .extension-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ext-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .ext-icon {
+            width: 48px;
+            height: 48px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .ext-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .ext-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .ext-meta {
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="logo">Weaver.ai</div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="audit.html"><span class="nav-icon">🛡️</span> Audit & Logs</a></li>
+            <li><a href="knowledge.html"><span class="nav-icon">📚</span> Knowledge Base</a></li>
+            <li><a href="workflow.html"><span class="nav-icon">⚡</span> Workflows</a></li>
+            <li><a href="#" class="active"><span class="nav-icon">🧩</span> Extensions</a></li>
+            <li><a href="settings.html"><span class="nav-icon">⚙️</span> Settings</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="avatar">JD</div>
+            <div class="user-info">
+                <div style="font-weight: 600; font-size: 0.9rem;">John Doe</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Admin</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Extensions Registry</h1>
+            <div class="date-display" style="color: var(--text-secondary);">January 27, 2026</div>
+        </header>
+
+        <div class="extensions-grid">
+            <!-- Forman Extension -->
+            <div class="extension-card">
+                <div class="ext-header">
+                    <div class="ext-icon">📝</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div>
+                    <div class="ext-title">Forman</div>
+                    <p class="ext-desc">Automatic form discovery and handling. Detects input fields and binds them to
+                        workflow actions.</p>
+                </div>
+                <div class="ext-meta">
+                    <span>v2.1.0</span>
+                    <span style="color: #059669;">● Active</span>
+                </div>
+            </div>
+
+            <!-- Scrapr Extension -->
+            <div class="extension-card">
+                <div class="ext-header">
+                    <div class="ext-icon">🕷️</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div>
+                    <div class="ext-title">Scrapr</div>
+                    <p class="ext-desc">Intelligent website data extraction. Crawls pages, detects new content, and
+                        monitors broken links.</p>
+                </div>
+                <div class="ext-meta">
+                    <span>v1.4.2</span>
+                    <span style="color: #059669;">● Active</span>
+                </div>
+            </div>
+
+            <!-- Placeholder Extension -->
+            <div class="extension-card" style="opacity: 0.7;">
+                <div class="ext-header">
+                    <div class="ext-icon">🔐</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div>
+                    <div class="ext-title">AuthShield</div>
+                    <p class="ext-desc">Enhanced security monitoring for login endpoints and session management.</p>
+                </div>
+                <div class="ext-meta">
+                    <span>v1.0.1</span>
+                    <span style="color: var(--text-secondary);">○ Inactive</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

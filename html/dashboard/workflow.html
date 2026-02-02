@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Builder - Weaver.ai</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-color: #f9fafb;
+            --sidebar-width: 250px;
+            --canvas-bg: #f3f4f6; /* Grid pattern bg */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .logo-area {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+
+        .workflow-title {
+            font-weight: 600;
+        }
+
+        .tools-panel {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .tool-category {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .tool-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            cursor: move;
+            background-color: white;
+            transition: all 0.2s;
+        }
+
+        .tool-item:hover {
+            border-color: var(--primary-color);
+            background-color: #f9fafb;
+        }
+
+        .tool-icon {
+            margin-right: 0.5rem;
+            width: 24px;
+            height: 24px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* Main Canvas Area */
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .top-bar {
+            height: 60px;
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            z-index: 10;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: #10b981; /* Green deploy button */
+            color: white;
+            border: none;
+        }
+        
+        .btn-run {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .canvas {
+            flex: 1;
+            background-color: var(--canvas-bg);
+            background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+            overflow: auto;
+        }
+
+        /* Nodes */
+        .node {
+            position: absolute;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            width: 250px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            user-select: none;
+        }
+        
+        .node-header {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            background-color: #f9fafb;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .node-icon {
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        
+        .icon-blue { background-color: #dbeafe; color: #1e40af; }
+        .icon-orange { background-color: #ffedd5; color: #9a3412; }
+        .icon-purple { background-color: #ede9fe; color: #5b21b6; }
+        .icon-red { background-color: #fee2e2; color: #991b1b; }
+
+        .node-content {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .node-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            color: var(--text-secondary);
+        }
+
+        .node-port {
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border: 2px solid #9ca3af;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .port-in { left: -5px; }
+        .port-out { right: -5px; }
+
+        /* Connections */
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background-color: #d1d5db;
+            z-index: -1;
+            transform-origin: 0 50%;
+        }
+
+        /* Error state */
+        .node.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 1px #ef4444;
+        }
+        
+        .error-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 10px;
+            height: 10px;
+            background-color: #ef4444;
+            border-radius: 50%;
+        }
+
+        /* Error Label Toast */
+        .error-toast {
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+            width: 300px;
+            background-color: white;
+            border: 1px solid #ef4444;
+            border-left: 4px solid #ef4444;
+            padding: 0.75rem;
+            border-radius: 4px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #ef4444;
+            z-index: 100;
+        }
+        
+        /* Node positioning */
+        #node-start { top: 100px; left: 100px; }
+        #node-condition { top: 250px; left: 400px; }
+        #node-docling { top: 50px; left: 600px; }
+        #node-mistral { top: 450px; left: 600px; }
+        #node-mcp { top: 450px; left: 900px; }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-area">
+            <a href="dashboard.html" class="back-btn">&larr;</a>
+            <div class="workflow-title">Weaver / Payment-Ops</div>
+        </div>
+        
+        <div class="tools-panel">
+            <div class="tool-category">Triggers</div>
+            <div class="tool-item">
+                <div class="tool-icon icon-blue">▶</div>
+                Start
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon icon-blue">⏰</div>
+                Schedule
+            </div>
+            
+            <div class="tool-category" style="margin-top: 1rem;">Logic</div>
+            <div class="tool-item">
+                <div class="tool-icon icon-orange">IF</div>
+                Condition
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon icon-orange">⟳</div>
+                Loop
+            </div>
+
+            <div class="tool-category" style="margin-top: 1rem;">Weaver Actions</div>
+            <div class="tool-item">
+                <div class="tool-icon icon-purple">🤖</div>
+                Mistral Parser
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon icon-red">🛠️</div>
+                MCP Tool
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon icon-purple">📄</div>
+                Docling
+            </div>
+
+            <div class="tool-category" style="margin-top: 1rem;">Forman</div>
+            <div class="tool-item">
+                <div class="tool-icon icon-blue">📝</div>
+                Text Input
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon icon-blue">☑️</div>
+                Selection
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon icon-blue">🔘</div>
+                Submit Action
+            </div>
+        </div>
+    </div>
+
+    <div class="main-area">
+        <div class="top-bar">
+            <div>
+                <!-- Breadcrumbs or status could go here -->
+                <span style="font-size: 0.8rem; color: #6b7280;">Draft - Autosaved</span>
+            </div>
+            <div class="action-buttons">
+                <button class="btn">Copilot</button>
+                <button class="btn">Toolbar</button>
+                <button class="btn btn-primary">Deploy</button>
+                <button class="btn btn-run">▶ Run</button>
+            </div>
+        </div>
+
+        <div class="canvas">
+            <!-- Connection Lines (SVG would be better but simplified div lines for demo) -->
+            <!-- Start to Condition -->
+            <div class="connection-line" style="top: 140px; left: 350px; width: 50px; transform: rotate(45deg);"></div> <!-- Very rough approx -->
+            <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;">
+                <path d="M 350 140 C 375 140, 375 290, 400 290" stroke="#d1d5db" stroke-width="2" fill="none" />
+                <path d="M 650 290 C 700 290, 550 490, 600 490" stroke="#d1d5db" stroke-width="2" fill="none" /> <!-- Condition to Mistral -->
+                <path d="M 850 490 L 900 490" stroke="#d1d5db" stroke-width="2" fill="none" /> <!-- Mistral to MCP -->
+            </svg>
+
+            <!-- Node: Start -->
+            <div class="node" id="node-start">
+                <div class="node-header">
+                    <div class="node-icon icon-blue">▶</div>
+                    Start
+                </div>
+                <div class="node-content">
+                    <div class="node-row">
+                         <span>Inputs</span>
+                         <span>files</span>
+                    </div>
+                </div>
+                <div class="node-port port-out"></div>
+            </div>
+
+            <!-- Node: Condition -->
+            <div class="node" id="node-condition" style="height: 100px;">
+                <div class="node-header">
+                    <div class="node-icon icon-orange">Y</div>
+                    Condition 1
+                    <div class="error-indicator"></div>
+                </div>
+                <div class="node-content">
+                    <div class="node-row"><span>If</span><span>-</span></div>
+                    <div class="node-row"><span>Else</span><span>-</span></div>
+                    <div class="node-row"><span style="color:red">Error</span><span style="background:red; width:4px; height:10px;"></span></div>
+                </div>
+                <div class="node-port port-in"></div>
+                <div class="node-port port-out"></div>
+            </div>
+
+            <!-- Node: Docling (Error) -->
+            <div class="node error" id="node-docling">
+                <div class="node-header">
+                    <div class="node-icon icon-purple">📄</div>
+                    docling
+                </div>
+                <div class="node-content">
+                    <div class="node-row"><span>URL</span><span>http://docling...</span></div>
+                    <div class="node-row"><span>Method</span><span>POST</span></div>
+                    <div class="node-row" style="color:red"><span>Error</span><span>&lt;start.files&gt;</span></div>
+                </div>
+                <div class="node-port port-in"></div>
+            </div>
+
+            <!-- Node: Mistral Parser -->
+            <div class="node" id="node-mistral">
+                <div class="node-header">
+                    <div class="node-icon icon-purple">M</div>
+                    Mistral Parser 1
+                </div>
+                <div class="node-content">
+                    <div class="node-row"><span>PDF Document</span><span>-</span></div>
+                    <div class="node-row"><span>Output Format</span><span>Markdown</span></div>
+                </div>
+                <div class="node-port port-in"></div>
+                <div class="node-port port-out"></div>
+            </div>
+
+            <!-- Node: MCP Tool -->
+            <div class="node" id="node-mcp">
+                <div class="node-header">
+                    <div class="node-icon icon-red">T</div>
+                    MCP Tools 1
+                </div>
+                <div class="node-content">
+                    <div class="node-row"><span>MCP Server</span><span>-</span></div>
+                    <div class="node-row"><span>Tool</span><span>-</span></div>
+                </div>
+                <div class="node-port port-in"></div>
+            </div>
+
+            <!-- Error Toast -->
+            <div class="error-toast">
+                <div style="font-weight:bold; margin-bottom:0.25rem;">HTTP Request failed: URL:</div>
+                http://docling:5001/v1/convert/file | Method: POST | Error: Invalid tool URL: toolUrl must use https://protocol
+                <button style="display:block; width:100%; margin-top:0.5rem; padding:0.25rem; background:#f3f4f6; border:1px solid #d1d5db; cursor:pointer;">Fix in Copilot</button>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

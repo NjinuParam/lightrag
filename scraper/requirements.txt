@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+scrapy
+scrapy-playwright
+requests
+pydantic
+python-dotenv
+loguru
