@@ -1,0 +1,7 @@
+.env
+deploy_config.bat
+publish_to_azure.bat
+publish_scraper.bat
+smoke_test.bat
+run_local.bat
+devops-lightrag.zip
